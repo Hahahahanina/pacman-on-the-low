@@ -23,6 +23,14 @@ Map::Map(std::string fileName) {
     file.close();
 }
 
+MapObjectTag Map::getTag(int x, int y) {
+    return map_[x][y].tag;
+}
+
+void Map::eatPoint(int x, int y) {
+    map_[x][y] = MapObject(x, y);
+}
+
 Ghosts::Ghosts(int count) {
     for (int i = 0; i < count; ++i) {
         ghost_.push_back(Ghost(rand() % 30));
@@ -57,14 +65,14 @@ void Game::startGame() {
 }
 
 void Game::tryMove(int x, int y, bool &b, bool &ifTunnel) {
-    if (map.map_[x][y].tag == POINT) {
-        ++player.points;
-        map.map_[x][y] = MapObject(x, y);
-    } else if (map.map_[x][y].tag == FENCE) {
+    if (map.getTag(x, y) == POINT) {
+        player.addPoints();
+        map.eatPoint(x, y);
+    } else if (map.getTag(x, y) == FENCE) {
         b = 0;
-    } else if (map.map_[x][y].tag == TUNNEL) {
+    } else if (map.getTag(x, y) == TUNNEL) {
         ifTunnel = 1;
-    } else if (map.map_[x][y].tag == COMMON) {
+    } else if (map.getTag(x, y) == COMMON) {
 
     }
 }
@@ -90,7 +98,7 @@ void Game::ghostsMoveToTarget(int x, int y) {
 void Game::playGame() {
     int x = 1;
     int y = 1;
-    while (player.healthPoints > 0) {
+    while (player.getHealthPoints() > 0) {
         ++time;
         char c;
         std::cin >> c;
@@ -131,7 +139,7 @@ void Game::playGame() {
 
         for (int i = 0; i < ghosts.ghost_.size(); ++i) {
             if (ghosts.ghost_[i].x == x && ghosts.ghost_[i].y == y) {
-                --player.healthPoints;
+                player.decreaseHealthPoints();
                 std::cout << "You lost 1HP" << '\n';
                 x = 1;
                 y = 1;
@@ -139,7 +147,7 @@ void Game::playGame() {
             }
         }
 
-        if (player.points == MAX_POINT_COUNT) {
+        if (player.getPoints() == MAX_POINT_COUNT) {
             std::cout << "You win!" << '\n';
             break;
         }

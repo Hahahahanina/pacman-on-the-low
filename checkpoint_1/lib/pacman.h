@@ -7,10 +7,14 @@ const int MAP_SIZE = 15;
 const int MAX_POINT_COUNT = 90;
 
 class Player {
-    friend class Game;
 public:
     Player() = default;
     explicit Player(std::string nickname_): nickname(nickname_) {};
+    int getPoints() {return points;};
+    void addPoints() {++points;};
+    int getHealthPoints() {return healthPoints;};
+    void decreaseHealthPoints() {--healthPoints;};
+
 private:
     std::string nickname = "player1";
     int healthPoints = 5;
@@ -25,7 +29,7 @@ enum MapObjectTag {
 };
 
 class MapObject {
-    friend class Game;
+    friend class Map;
 public:
     explicit MapObject(int x_, int y_): x(x_), y(y_) {};
 protected:
@@ -56,10 +60,11 @@ public:
 };
 
 class Map {
-    friend class Game;
 public:
     Map() = default;
     Map(std::string fileName);
+    MapObjectTag getTag(int x, int y);
+    void eatPoint(int x, int y);
 private:
     std::vector<std::vector<MapObject>> map_;
 };
@@ -98,7 +103,7 @@ public:
 private:
     Map map;
     Player player;
-    int time;
+    size_t time;
     Ghosts ghosts;
 
     void tryMove(int x, int y, bool &b, bool &ifTunnel);
