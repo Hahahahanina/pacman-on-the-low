@@ -47,16 +47,12 @@ void Game::startGame() {
     playGame();
 }
 
-void Game::tryMove(int x, int y, bool &b, bool &ifTunnel) {
+void Game::tryMove(int x, int y, MapObjectTag& nextSquareTag) {
     if (map.getTag(x, y) == POINT) {
         player.addPoints();
         map.eatPoint(x, y);
-    } else if (map.getTag(x, y) == FENCE) {
-        b = 0;
-    } else if (map.getTag(x, y) == TUNNEL) {
-        ifTunnel = 1;
-    } else if (map.getTag(x, y) == COMMON) {
-
+    } else {
+        nextSquareTag = map.getTag(x, y);
     }
 }
 
@@ -85,32 +81,31 @@ void Game::playGame() {
         ++time;
         char c;
         std::cin >> c;
-        bool b = 1;
-        bool ifTunnel = 0;
+        MapObjectTag nextSquareTag = COMMON;
         if (c == 'd') {
-            tryMove(x, y + 1, b, ifTunnel);
-            if (b) {
+            tryMove(x, y + 1, nextSquareTag);
+            if (nextSquareTag != FENCE) {
                 ++y;
             }
-            if (ifTunnel) {
+            if (nextSquareTag == TUNNEL) {
                 y = 0;
             }
         } else if (c == 'a') {
-            tryMove(x, y - 1, b, ifTunnel);
-            if (b) {
+            tryMove(x, y - 1, nextSquareTag);
+            if (nextSquareTag != FENCE) {
                 --y;
             }
-            if (ifTunnel) {
+            if (nextSquareTag == TUNNEL) {
                 y = MAP_SIZE - 1;
             }
         } else if (c == 's') {
-            tryMove(x - 1, y, b, ifTunnel);
-            if (b) {
+            tryMove(x - 1, y, nextSquareTag);
+            if (nextSquareTag != FENCE) {
                 --x;
             }
         } else if (c == 'w') {
-            tryMove(x + 1, y, b, ifTunnel);
-            if (b) {
+            tryMove(x + 1, y, nextSquareTag);
+            if (nextSquareTag != FENCE) {
                 ++x;
             }
         }

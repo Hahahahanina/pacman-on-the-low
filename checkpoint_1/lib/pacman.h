@@ -106,7 +106,7 @@ private:
     size_t time;
     Ghosts ghosts;
 
-    void tryMove(int x, int y, bool &b, bool &ifTunnel);
+    void tryMove(int x, int y, MapObjectTag& nextSquareTag);
     void ghostsMoveToTarget(int x, int y);
     void playGame();
     void createObjects();
