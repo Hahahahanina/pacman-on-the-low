@@ -5,14 +5,15 @@
 
 const int MAP_SIZE = 15;
 const int MAX_POINT_COUNT = 90;
+const int GHOSTS_COUNT = 4;
 
 class Player {
 public:
     Player() = default;
     explicit Player(std::string nickname_): nickname(nickname_) {};
-    int getPoints() {return points;};
+    int getPoints() const {return points;};
     void addPoints() {++points;};
-    int getHealthPoints() {return healthPoints;};
+    int getHealthPoints() const {return healthPoints;};
     void decreaseHealthPoints() {--healthPoints;};
 
 private:
@@ -63,31 +64,29 @@ class Map {
 public:
     Map() = default;
     Map(std::string fileName);
-    MapObjectTag getTag(int x, int y);
-    void eatPoint(int x, int y);
+    MapObjectTag getTag(int x, int y) {return map_[x][y].tag;};
+    void eatPoint(int x, int y) {map_[x][y] = MapObject(x, y);  };
 private:
     std::vector<std::vector<MapObject>> map_;
 };
 
 class Ghost {
-    friend class Game;
 public:
     Ghost() = default;
-    Ghost(int time = 0): appearanceTime(time) {};
+    void moveLeft() {--x;};
+    void moveRight() {++x;};
+    void moveTop() {--y;};
+    void moveBottom() {++y;};
+    int getXCoordinate() const {return x;};
+    int getYCoordinate() const {return y;};
+    int getAppearanceTime() const {return appearanceTime;};
 private:
-    int appearanceTime = 0;
+    int appearanceTime = rand() % 30;
     int x = 7;
     int y = 7;
 };
 
-class Ghosts {
-    friend class Game;
-public:
-    Ghosts() = default;
-    Ghosts(int count);
-private:
-    std::vector<Ghost> ghost_;
-};
+using Ghosts = std::vector<Ghost>;
 
 class Creator {
     friend class Game;
@@ -101,6 +100,7 @@ class Game {
 public:
     void startGame();
 private:
+
     Map map;
     Player player;
     size_t time;

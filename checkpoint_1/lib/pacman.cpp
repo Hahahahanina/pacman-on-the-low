@@ -23,20 +23,6 @@ Map::Map(std::string fileName) {
     file.close();
 }
 
-MapObjectTag Map::getTag(int x, int y) {
-    return map_[x][y].tag;
-}
-
-void Map::eatPoint(int x, int y) {
-    map_[x][y] = MapObject(x, y);
-}
-
-Ghosts::Ghosts(int count) {
-    for (int i = 0; i < count; ++i) {
-        ghost_.push_back(Ghost(rand() % 30));
-    }
-}
-
 Player Creator::createPlayer() {
     std::cout << "Enter your nickname:" << '\n';
     std::string nickname;
@@ -52,10 +38,7 @@ Map Creator::createMap() {
 }
 
 Ghosts Creator::createGhosts() {
-    std::cout << "Enter ghosts count:" << '\n';
-    int count;
-    std::cin >> count;
-    Ghosts ghosts(count);
+    Ghosts ghosts(GHOSTS_COUNT);
     return ghosts;
 }
 
@@ -78,18 +61,18 @@ void Game::tryMove(int x, int y, bool &b, bool &ifTunnel) {
 }
 
 void Game::ghostsMoveToTarget(int x, int y) {
-    for (int i = 0; i < ghosts.ghost_.size(); ++i) {
-        if (ghosts.ghost_[i].appearanceTime <= time) {
-            if (x > ghosts.ghost_[i].x) {
-                ++ghosts.ghost_[i].x;
-            } else if (x < ghosts.ghost_[i].x) {
-                --ghosts.ghost_[i].x;
+    for (int i = 0; i < GHOSTS_COUNT; ++i) {
+        if (ghosts[i].getAppearanceTime() <= time) {
+            if (x > ghosts[i].getXCoordinate()) {
+                ghosts[i].moveRight();
+            } else if (x < ghosts[i].getXCoordinate()) {
+                ghosts[i].moveLeft();
             }
 
-            if (y > ghosts.ghost_[i].y) {
-                ++ghosts.ghost_[i].y;
-            } else if (y < ghosts.ghost_[i].y) {
-                --ghosts.ghost_[i].y;
+            if (y > ghosts[i].getYCoordinate()) {
+                ghosts[i].moveTop();
+            } else if (y < ghosts[i].getYCoordinate()) {
+                ghosts[i].moveBottom();
             }
         }
     }
@@ -137,8 +120,8 @@ void Game::playGame() {
         }
 
 
-        for (int i = 0; i < ghosts.ghost_.size(); ++i) {
-            if (ghosts.ghost_[i].x == x && ghosts.ghost_[i].y == y) {
+        for (int i = 0; i < GHOSTS_COUNT; ++i) {
+            if (ghosts[i].getXCoordinate() == x && ghosts[i].getYCoordinate() == y) {
                 player.decreaseHealthPoints();
                 std::cout << "You lost 1HP" << '\n';
                 x = 1;
@@ -150,6 +133,10 @@ void Game::playGame() {
         if (player.getPoints() == MAX_POINT_COUNT) {
             std::cout << "You win!" << '\n';
             break;
+        }
+
+        if (player.getHealthPoints() == 0) {
+            std::cout << "You lost(" << '\n';
         }
     }
 }
