@@ -1,11 +1,13 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <fstream>
+#include <vector>
+#include <cassert>
 
 const int MAP_SIZE = 15;
 const int MAX_POINT_COUNT = 90;
 const int GHOSTS_COUNT = 4;
+const std::string MAP_NAME = "map.txt";
 
 class Player {
 public:
@@ -60,15 +62,6 @@ public:
     };
 };
 
-class Map {
-public:
-    Map() = default;
-    Map(std::string fileName);
-    MapObjectTag getTag(int x, int y) {return map_[x][y].tag;};
-    void eatPoint(int x, int y) {map_[x][y] = MapObject(x, y);  };
-private:
-    std::vector<std::vector<MapObject>> map_;
-};
 
 class Ghost {
 public:
@@ -87,6 +80,18 @@ private:
 };
 
 using Ghosts = std::vector<Ghost>;
+
+class Map {
+public:
+    Map() = default;
+    Map(const std::string& fileName);
+    MapObjectTag getTag(int x, int y) {return map_[x][y].tag;};
+    void eatPoint(int x, int y) {map_[x][y] = MapObject(x, y);  };
+    void printMap(int x, int y, Ghosts ghosts);
+private:
+    std::vector<std::vector<MapObject>> map_;
+};
+
 
 class Creator {
     friend class Game;

@@ -1,8 +1,8 @@
 #include "pacman.h"
 
-Map::Map(std::string fileName) {
-    std::ifstream file;
-    file.open(fileName);
+Map::Map(const std::string& fileName) {
+    std::ifstream file(fileName);
+    assert(file && "Move map.txt to cmake-build-debug");
     for (int i = 0; i < MAP_SIZE; ++i) {
         std::vector<MapObject> current;
         for (int j = 0; j < MAP_SIZE; ++j) {
@@ -23,6 +23,31 @@ Map::Map(std::string fileName) {
     file.close();
 }
 
+void Map::printMap(int x, int y, Ghosts ghosts) {
+    for (size_t i = 0; i < MAP_SIZE; ++i) {
+        for (size_t j = 0; j < MAP_SIZE; ++j) {
+            bool ifGhost = false;
+            if (i == x && j == y) {
+                std::cout << 'P';
+                continue;
+            }
+            for (auto ghost: ghosts) {
+                if (ghost.getXCoordinate() == i && ghost.getYCoordinate() == j) {
+                    std::cout << 'G';
+                    ifGhost = true;
+                    break;
+                }
+            }
+            if (ifGhost) continue;
+            if (getTag(i, j) == FENCE) std::cout << '0';
+            if (getTag(i, j) == POINT) std::cout << '.';
+            if (getTag(i, j) == COMMON) std::cout << ' ';
+            if (getTag(i, j) == TUNNEL) std::cout << '|';
+        }
+        std::cout << '\n';
+    }
+}
+
 Player Creator::createPlayer() {
     std::cout << "Enter your nickname:" << '\n';
     std::string nickname;
@@ -32,8 +57,7 @@ Player Creator::createPlayer() {
 }
 
 Map Creator::createMap() {
-    std::string fileName = "map.txt";
-    Map map(fileName);
+    Map map(MAP_NAME);
     return map;
 }
 
@@ -98,12 +122,12 @@ void Game::playGame() {
             if (nextSquareTag == TUNNEL) {
                 y = MAP_SIZE - 1;
             }
-        } else if (c == 's') {
+        } else if (c == 'w') {
             tryMove(x - 1, y, nextSquareTag);
             if (nextSquareTag != FENCE) {
                 --x;
             }
-        } else if (c == 'w') {
+        } else if (c == 's') {
             tryMove(x + 1, y, nextSquareTag);
             if (nextSquareTag != FENCE) {
                 ++x;
@@ -114,6 +138,7 @@ void Game::playGame() {
             ghostsMoveToTarget(x, y);
         }
 
+        map.printMap(x, y, ghosts);
 
         for (int i = 0; i < GHOSTS_COUNT; ++i) {
             if (ghosts[i].getXCoordinate() == x && ghosts[i].getYCoordinate() == y) {
