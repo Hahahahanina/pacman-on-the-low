@@ -3,9 +3,9 @@
 Map::Map(const std::string& fileName) {
     std::ifstream file(fileName);
     assert(file && "File map.txt doesn't exist");
-    for (int i = 0; i < MAP_SIZE; ++i) {
+    for (size_t i = 0; i < MAP_SIZE; ++i) {
         std::vector<MapObject> current;
-        for (int j = 0; j < MAP_SIZE; ++j) {
+        for (size_t j = 0; j < MAP_SIZE; ++j) {
             char c;
             file >> c;
             if (c == 'p') {
@@ -81,7 +81,7 @@ void Game::tryMove(int x, int y, MapObjectTag& nextSquareTag) {
 }
 
 void Game::ghostsMoveToTarget(int x, int y) {
-    for (int i = 0; i < GHOSTS_COUNT; ++i) {
+    for (size_t i = 0; i < GHOSTS_COUNT; ++i) {
         if (ghosts[i].getAppearanceTime() <= time) {
             if (x > ghosts[i].getXCoordinate()) {
                 ghosts[i].moveRight();
