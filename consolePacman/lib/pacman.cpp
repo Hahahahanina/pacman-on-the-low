@@ -2,7 +2,7 @@
 
 Map::Map(const std::string& fileName) {
     std::ifstream file(fileName);
-    assert(file && "Move map.txt to cmake-build-debug");
+    assert(file && "File map.txt doesn't exist");
     for (int i = 0; i < MAP_SIZE; ++i) {
         std::vector<MapObject> current;
         for (int j = 0; j < MAP_SIZE; ++j) {
